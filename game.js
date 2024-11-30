@@ -396,9 +396,9 @@ function battleScene(game) {
     }
 
     function endGame() {
-        const winner = game.gameState.player1.health <= 0 ? '玩家2' : '玩家1';
-        alert(`游戏结束！${winner} 获胜！`);
-        window.location.href = 'index.html';
+        const winner = game.gameState.player1.health <= 0 ? 'player2' : 'player1';
+        alert(`Game Over！${winner} win！`);
+        window.location.href = 'game.html';
     }
     return {
         initialize
