@@ -109,15 +109,13 @@ body {
     margin-top: 12px;
     width: 200px;
     height: 4px;
-    -webkit-appearance: none;
     appearance: none;
     background: #E0E0E0;
     border-radius: 2px;
     outline: none;
 }
 
-#volume-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
+#volume-slider:slider-thumb {
     appearance: none;
     width: 16px;
     height: 16px;
@@ -127,7 +125,7 @@ body {
     transition: background-color 0.2s ease;
 }
 
-#volume-slider::-webkit-slider-thumb:hover {
+#volume-slider:slider-thumb:hover {
     background: #5A52E0;
 }
 
