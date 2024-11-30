@@ -398,7 +398,7 @@ function battleScene(game) {
     function endGame() {
         const winner = game.gameState.player1.health <= 0 ? 'player2' : 'player1';
         alert(`Game Over！${winner} win！`);
-        window.location.href = 'game.html';
+        window.location.href = 'index.html';
     }
     return {
         initialize
