@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Rules - Elemental Fighting Master</title>
+    <link rel="stylesheet" href="intro.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</head>
+<body>
+<div id="card">
+    <div class="close-btn" onclick="window.location.href='home.html'">×</div>
+
+    <div class="card-content">
+        <h1 class="game-title">Game Introduction</h1>
+
+        <!-- Original Rule Content -->
+        <div id="description" class="game-description">
+            <h2>Elemental Fighting Master Game Setting</h2>
+            <p><b>Elemental Theme:</b> Players choose an element as their character, such as Fire, Water, Air and Earth.</p>
+            <p><b>Keyboard Controls:</b> Players use the keyboard to control their character's movement, attack and release skills.</p>
+
+            <h3>Core Functional Modules</h3>
+            <ul>
+                <li>
+                    <b>Character selection interface</b><br>
+                    Player selects an element and the page dynamically loads the character model and special effects.
+                </li>
+                <li>
+                    <b>Battle Interface</b><br>
+                    Player 1 controls (keyboard WASD):<br>
+                    W: Jump<br>
+                    A: Move left<br>
+                    D: Move right<br>
+                    S: Defense<br>
+                    F: Normal Attack<br>
+                    G: Release Skills<br>
+
+                    Player 2 controls (arrow keys):<br>
+                    Up: Jump<br>
+                    Left: Move left<br>
+                    Right: Move right<br>
+                    Down: Defense<br>
+                    Numeric key 1: Normal Attack<br>
+                    Numeric key 2: Release Skill
+                </li>
+                <li>
+                    <b>Scoring System</b><br>
+                    Each time you hit your opponent, your score will be +10. Consecutive hits will trigger the "Combo Bonus".
+                </li>
+            </ul>
+        </div>
+
+        <!-- Element Cards Section -->
+        <div class="elements-section">
+            <h2>Choose Your Element</h2>
+            <div class="game-cards">
+                <div class="game-card">
+                    <i class="fas fa-fire element-icon"></i>
+                    <h3>Fire Element</h3>
+                    <p>Master the power of flames</p>
+                </div>
+                <div class="game-card">
+                    <i class="fas fa-water element-icon"></i>
+                    <h3>Water Element</h3>
+                    <p>Control the flowing waters</p>
+                </div>
+                <div class="game-card">
+                    <i class="fas fa-wind element-icon"></i>
+                    <h3>Air Element</h3>
+                    <p>Command the mighty winds</p>
+                </div>
+                <div class="game-card">
+                    <i class="fas fa-mountain element-icon"></i>
+                    <h3>Earth Element</h3>
+                    <p>Wield earth's strength</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

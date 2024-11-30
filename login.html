@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width-device-width,initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Slider Form</title>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <!--注册-->
+        <div class="form-container sign-up-container">
+            <form id="signupForm">
+                <h1 class="black">Create Account</h1>
+                <input type="text" placeholder="Name" id="signupName">
+                <input type="password"  placeholder="Password" id="signupPassword">
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+        <!--登录-->
+        <div class="form-container sign-in-container">
+            <form id="signinForm">
+                <h1 class="black">Sign In</h1>
+                <input type="text" placeholder="Name" id="signinName">
+                <input type="password" placeholder="Password" id="signinPassword">
+                <button type="submit">Sign In</button>
+            </form>
+        </div>
+
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back</h1>
+                    <p>To keep connected with us please login with your personal info</p >
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Player</h1>
+                    <p>Enter your personal details and start your journey with us</p >
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script></script>
+    <script>
+        function pass(psw) {
+            if (psw !== "") {
+                if (/[a-zA-Z]/.test(psw) && /[0-9]/.test(psw)) {
+                    if (psw[0] === psw[0].toUpperCase()) {
+                        if (/[@$&!?]/.test(psw)) {
+                            if (psw.length > 8) {
+                                alert('The password is valid');
+                                return true;
+                            } else {
+                                alert('The length of the password must be greater than 8');
+                            }
+                        } else {
+                            alert('The password must contain one of @$&!?');
+                        }
+                    } else {
+                        alert('The first letter should be a capital letter');
+                    }
+                } else {
+                    alert('The password must contain both a number and a letter');
+                }
+            } else {
+                alert('The password cannot be empty');
+            }
+            return false;
+        }
+
+        function validateSignUp() {
+            const signupName = document.getElementById('signupName').value;
+            const signupPassword = document.getElementById('signupPassword').value;
+
+
+            if (!signupName) {
+                alert("Name cannot be empty");
+                return false;
+            }
+
+            if (!pass(signupPassword)) {
+                return false;
+            }
+
+            // Check if the user already exists
+            if (localStorage.getItem(signupName)) {
+                alert("User already exists. Please use a different name.");
+                return false;
+            }
+
+            // Save user data to localStorage
+            localStorage.setItem(signupName, signupPassword);
+            alert("Registration successful!");
+            return true;
+        }
+
+        function validateSignIn() {
+            const signinName = document.getElementById('signinName').value;
+            const signinPassword = document.getElementById('signinPassword').value;
+
+            if (!signinName || !signinPassword) {
+                alert("Name and Password cannot be empty");
+                return false;
+            }
+
+            // Verify user credentials
+            const storedPassword = localStorage.getItem(signinName);
+            if (storedPassword === signinPassword) {
+                alert("Login successful!");
+                window.location.href = "../game/index.html";
+                return true;
+            } else {
+                alert("Invalid name or password");
+                return false;
+            }
+        }
+
+        // Add event listeners
+        document.getElementById('signupForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            validateSignUp();
+        });
+
+        document.getElementById('signinForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            validateSignIn();
+        });
+
+const signUpButton = document.getElementById('signUp');
+const signInButton = document.getElementById('signIn');
+const container = document.getElementById('container');
+
+
+signUpButton.addEventListener('click', () => {
+    container.classList.add("right-panel-active");
+});
+
+
+signInButton.addEventListener('click', () => {
+    container.classList.remove("right-panel-active");
+});
+    </script>
+</body>
+</html>

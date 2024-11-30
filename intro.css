@@ -1,0 +1,238 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: white;
+}
+
+#card {
+    background: #222;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    width: 1000px;
+    height: 80%;
+    text-align: center;
+    transform: scale(1);
+    transition: transform 0.3s ease;
+}
+
+ul {
+    list-style: none;
+}
+
+#card:hover {
+    transform: scale(1.05);
+
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.game-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #FFD700;
+}
+
+.game-description {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #FFD700;
+    color: #222;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.close:hover {
+    background-color: #FFA500;
+    opacity: 0.7;
+}
+
+#card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 2000px;
+    margin: 40px auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.card-content {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 20px;
+}
+
+.game-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5em;
+    color: #2D3436;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.game-description {
+    color: #2D3436;
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+.game-description h2 {
+    font-family: 'Poppins', sans-serif;
+    color: #2D3436;
+    margin: 24px 0 16px;
+}
+
+.game-description h3 {
+    font-family: 'Poppins', sans-serif;
+    color: #2D3436;
+    margin: 20px 0 12px;
+}
+
+.game-description p {
+    margin: 12px 0;
+}
+
+.game-description ol {
+    padding-left: 20px;
+}
+
+.game-description li {
+    margin: 16px 0;
+}
+
+/* New styles for element cards */
+.elements-section {
+    margin-top: 40px;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    padding-top: 40px;
+}
+
+.elements-section h2 {
+    font-family: 'Poppins', sans-serif;
+    color: #2D3436;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.game-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.game-card {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 24px;
+    border-radius: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(108, 99, 255, 0.2);
+}
+
+.element-icon {
+    font-size: 2.5rem;
+    color: #6C63FF;
+    margin-bottom: 16px;
+}
+
+.game-card h3 {
+    color: #2D3436;
+    margin-bottom: 8px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.game-card p {
+    color: #636E72;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #card {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .game-cards {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .game-title {
+        font-size: 2em;
+    }
+}
+
+/* Animation for cards */
+.game-card {
+    animation: fadeInUp 0.6s ease backwards;
+}
+
+.game-card:nth-child(1) { animation-delay: 0.1s; }
+.game-card:nth-child(2) { animation-delay: 0.2s; }
+.game-card:nth-child(3) { animation-delay: 0.3s; }
+.game-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
