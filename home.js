@@ -1,4 +1,3 @@
-// Existing greeting code
 function greet() {
     let time = new Date().getHours();
     if (time >= 5 && time < 12) {
@@ -12,7 +11,6 @@ function greet() {
     }
 }
 
-// Audio controls
 const music = document.getElementById('background-music');
 const volumeSlider = document.getElementById('volume-slider');
 
@@ -25,7 +23,6 @@ volumeSlider.addEventListener('input', () => {
     music.volume = volumeSlider.value;
 });
 
-// Weather functionality using wttr.in
 async function getWeather() {
     try {
         const position = await new Promise((resolve, reject) => {
@@ -93,17 +90,7 @@ async function getWeather() {
             </div>`;
     }
 }
-/*
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    getWeather();
-    greet();
-});*/
 
-// Refresh weather every 30 minutes
-setInterval(getWeather, 1800000);
-
-// Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
