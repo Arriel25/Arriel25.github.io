@@ -1,21 +1,22 @@
+// 全局游戏状态
 const gameState = {
     player1: null,
     player2: null,
 };
 
+// 冷却时间配置
 const cooldownsConfig = {
     player1: {
         jump: { duration: 1000, lastUsed: 0 },
         attack: { duration: 500, lastUsed: 0 },
-        skill: { duration: 3000, lastUsed: 0 },
     },
     player2: {
         jump: { duration: 1000, lastUsed: 0 },
         attack: { duration: 500, lastUsed: 0 },
-        skill: { duration: 3000, lastUsed: 0 },
     },
 };
 
+// 初始化角色选择界面
 function initializeCharacterSelect(startGameCallback) {
     const characterCards = document.querySelectorAll('.character-card');
     const startButton = document.querySelector('.start-button');
@@ -24,6 +25,7 @@ function initializeCharacterSelect(startGameCallback) {
         player2: null,
     };
 
+    // 选择角色
     function selectCharacter(player, card) {
         const playerSection = card.closest('.character-select');
         playerSection.querySelectorAll('.character-card').forEach(c => {
@@ -32,9 +34,12 @@ function initializeCharacterSelect(startGameCallback) {
 
         card.classList.add('selected');
         selectedCharacters[player] = card.dataset.element;
+
+        // 检查是否所有玩家都已选择角色
         startButton.disabled = !(selectedCharacters.player1 && selectedCharacters.player2);
     }
 
+    // 开始游戏
     function startGame() {
         if (selectedCharacters.player1 && selectedCharacters.player2) {
             document.getElementById('character-select').style.display = 'none';
@@ -43,6 +48,7 @@ function initializeCharacterSelect(startGameCallback) {
         }
     }
 
+    // 添加角色卡片点击事件监听器
     characterCards.forEach(card => {
         card.addEventListener('click', (e) => {
             const playerSection = e.target.closest('.character-select');
@@ -51,28 +57,13 @@ function initializeCharacterSelect(startGameCallback) {
         });
     });
 
+    // 添加开始按钮点击事件监听器
     startButton.addEventListener('click', startGame);
 }
 
-function createCooldownUI() {
-    function createCooldownBar(player, action) {
-        const bar = document.createElement('div');
-        bar.className = `cooldown-bar ${player}-${action}`;
-        bar.innerHTML = `
-            <div class="cooldown-fill"></div>
-            <div class="cooldown-label">${action}</div>
-        `;
-        document.querySelector('.battle-scene').appendChild(bar);
-    }
-
-    ['player1', 'player2'].forEach(player => {
-        ['jump', 'attack', 'skill'].forEach(action => {
-            createCooldownBar(player, action);
-        });
-    });
-}
-
+// 初始化战斗场景
 function initializeBattleScene(characters) {
+    // 初始化玩家状态
     gameState.player1 = {
         character: characters.player1,
         health: 100,
@@ -91,31 +82,30 @@ function initializeBattleScene(characters) {
         facingRight: false,
     };
 
+    // 设置玩家图片
     const player1Element = document.querySelector('.player1 img');
     const player2Element = document.querySelector('.player2 img');
 
     player1Element.src = `resources/${characters.player1}/stand.png`;
     player2Element.src = `resources/${characters.player2}/stand.png`;
 
+    // 定义控制键
     const controls = {
         player1: {
             up: 'w',
-            down: 's',
             left: 'a',
             right: 'd',
             attack: 'f',
-            skill: 'g',
         },
         player2: {
             up: 'ArrowUp',
-            down: 'ArrowDown',
             left: 'ArrowLeft',
             right: 'ArrowRight',
             attack: '1',
-            skill: '2',
         },
     };
 
+    // 记录按下的键
     const pressedKeys = new Set();
 
     const jumpForce = 18;
@@ -131,6 +121,7 @@ function initializeBattleScene(characters) {
         player2: 0,
     };
 
+    // 动画状态
     const animationPriority = {
         player1: {
             currentAnimation: 'stand',
@@ -147,7 +138,6 @@ function initializeBattleScene(characters) {
         run: 1,
         prepare: 2,
         attack: 2,
-        magic: 2,
     };
 
     const runAnimationState = {
@@ -163,55 +153,29 @@ function initializeBattleScene(characters) {
         },
     };
 
-    const keyStates = {
-        player1: {
-            skill: false,
-        },
-        player2: {
-            skill: false,
-        },
-    };
-
+    // 伤害配置
     const damageConfig = {
         normalAttack: {
             base: 8,
             variance: 4,
             range: 120,
         },
-        skillAttack: {
-            base: 15,
-            variance: 5,
-        },
     };
 
-    createCooldownUI();
-
+    // 检查是否在冷却中
     function isOnCooldown(player, action) {
         const cooldown = cooldownsConfig[player][action];
         const now = Date.now();
         return now - cooldown.lastUsed < cooldown.duration;
     }
 
+    // 开始冷却
     function startCooldown(player, action) {
         const cooldown = cooldownsConfig[player][action];
         cooldown.lastUsed = Date.now();
-        updateCooldownUI(player, action);
     }
 
-    function updateCooldownUI(player, action) {
-        const cooldown = cooldownsConfig[player][action];
-        const element = document.querySelector(`.${player}-${action} .cooldown-fill`);
-        const duration = cooldown.duration;
-
-        element.style.transition = `width ${duration}ms linear`;
-        element.style.width = '100%';
-
-        setTimeout(() => {
-            element.style.transition = 'none';
-            element.style.width = '0%';
-        }, duration);
-    }
-
+    // 显示伤害数字
     function showDamageNumber(damage, targetPlayer) {
         const damageElement = document.createElement('div');
         damageElement.className = 'damage-number';
@@ -237,6 +201,7 @@ function initializeBattleScene(characters) {
         }, 1000);
     }
 
+    // 计算并应用伤害
     function calculateAndApplyDamage(player) {
         const state = gameState[player];
         const targetPlayer = player === 'player1' ? 'player2' : 'player1';
@@ -250,12 +215,14 @@ function initializeBattleScene(characters) {
             const finalDamage = Math.round(damage);
 
             targetState.health = Math.max(0, targetState.health - finalDamage);
+            console.log('finalDamage', finalDamage);
             state.score += finalDamage;
 
             showDamageNumber(finalDamage, targetPlayer);
         }
     }
 
+    // 设置玩家动画
     function setPlayerAnimation(player, animationType, duration = 0) {
         const state = gameState[player];
         const animState = animationPriority[player];
@@ -282,6 +249,7 @@ function initializeBattleScene(characters) {
         }
     }
 
+    // 处理奔跑动画
     function handleRunAnimation(player, state) {
         const now = Date.now();
         const runState = runAnimationState[player];
@@ -298,6 +266,7 @@ function initializeBattleScene(characters) {
         }
     }
 
+    // 重置动画到站立状态
     function resetAnimation(player) {
         const animState = animationPriority[player];
         animState.currentAnimation = 'stand';
@@ -321,20 +290,14 @@ function initializeBattleScene(characters) {
         }, 500);
     }
 
-    function useSkill(player) {
-        if (isOnCooldown(player, 'skill')) return;
-
-        setPlayerAnimation(player, 'magic', 500);
-        startCooldown(player, 'skill');
-    }
-
+    // 准备攻击
     function startPrepareAttack(player) {
         if (isOnCooldown(player, 'attack')) return;
 
         setPlayerAnimation(player, 'prepare', 500);
     }
 
-    //jump start
+    // 开始跳跃
     function startJump(player) {
         if (isJumping[player] || isOnCooldown(player, 'jump')) return;
 
@@ -343,6 +306,7 @@ function initializeBattleScene(characters) {
         startCooldown(player, 'jump');
     }
 
+    // 处理跳跃
     function handleJumping(player, deltaTime) {
         const playerElement = document.querySelector(`.${player}`);
         const state = gameState[player];
@@ -361,11 +325,13 @@ function initializeBattleScene(characters) {
         }
     }
 
+    // 处理移动
     function handleMovement(deltaTime) {
         const speed = 0.5;
         const state1 = gameState.player1;
         const state2 = gameState.player2;
-        //1
+
+        // 玩家1移动
         if (pressedKeys.has(controls.player1.left)) {
             state1.position.x = Math.max(0, state1.position.x - speed * deltaTime);
             state1.facingRight = false;
@@ -383,7 +349,8 @@ function initializeBattleScene(characters) {
         } else if (animationPriority.player1.currentAnimation === 'run') {
             resetAnimation('player1');
         }
-        //2
+
+        // 玩家2移动
         if (pressedKeys.has(controls.player2.left.toLowerCase())) {
             state2.position.x = Math.max(0, state2.position.x - speed * deltaTime);
             state2.facingRight = false;
@@ -402,14 +369,16 @@ function initializeBattleScene(characters) {
             resetAnimation('player2');
         }
 
+        // 更新玩家位置
         document.querySelector('.player1').style.left = `${state1.position.x}px`;
         document.querySelector('.player2').style.left = `${state2.position.x}px`;
 
-       
+        // 处理跳跃
         handleJumping('player1', deltaTime);
         handleJumping('player2', deltaTime);
     }
 
+    // 更新奔跑动画
     function updateRunningAnimations() {
         ['player1', 'player2'].forEach(player => {
             if (animationPriority[player].currentAnimation === 'run') {
@@ -418,7 +387,9 @@ function initializeBattleScene(characters) {
         });
     }
 
+    // 更新UI
     function updateUI() {
+        // 更新生命值条
         const health1Element = document.querySelector('.player1-health .health-bar-fill');
         const health2Element = document.querySelector('.player2-health .health-bar-fill');
         const score1Element = document.querySelector('.player1-score');
@@ -427,26 +398,31 @@ function initializeBattleScene(characters) {
         health1Element.style.width = `${gameState.player1.health}%`;
         health2Element.style.width = `${gameState.player2.health}%`;
 
+        // 更新得分
         score1Element.textContent = gameState.player1.score;
         score2Element.textContent = gameState.player2.score;
 
+        // 检查游戏结束条件
         if (gameState.player1.health <= 0 || gameState.player2.health <= 0) {
             endGame();
         }
     }
 
+    // 结束游戏
     function endGame() {
         const winner = gameState.player1.health <= 0 ? 'Player 2' : 'Player 1';
-        alert(`Game Over！${winner} win！`);
+        alert(`游戏结束！${winner} 获胜！`);
         window.location.href = 'index.html';
     }
 
+    // 更新游戏状态
     function update(deltaTime) {
         handleMovement(deltaTime);
         updateRunningAnimations();
         updateUI();
     }
 
+    // 游戏循环
     function startGameLoop() {
         let lastTime = 0;
         function gameLoop(timestamp) {
@@ -460,10 +436,12 @@ function initializeBattleScene(characters) {
         requestAnimationFrame(gameLoop);
     }
 
+    // 处理键盘按下事件
     function handleKeyDown(e) {
         const key = e.key.toLowerCase();
         pressedKeys.add(key);
-        //jump
+
+        // 跳跃键
         if (key === controls.player1.up && !isJumping.player1 && !isOnCooldown('player1', 'jump')) {
             startJump('player1');
         }
@@ -471,51 +449,49 @@ function initializeBattleScene(characters) {
             startJump('player2');
         }
 
-        //attack
+        // 攻击键
         if (key === controls.player1.attack && !isOnCooldown('player1', 'attack')) {
             startPrepareAttack('player1');
-        } else if (key === controls.player1.skill) {
-            keyStates.player1.skill = true;
-        } else if (key === controls.player2.attack && !isOnCooldown('player2', 'attack')) {
+        }
+        if (key === controls.player2.attack && !isOnCooldown('player2', 'attack')) {
             startPrepareAttack('player2');
-        } else if (key === controls.player2.skill) {
-            keyStates.player2.skill = true;
         }
     }
 
+    // 处理键盘松开事件
     function handleKeyUp(e) {
         const key = e.key.toLowerCase();
         pressedKeys.delete(key);
 
-        //attack
+        // 攻击键松开
         if (key === controls.player1.attack) {
             executeAttack('player1');
-        } else if (key === controls.player1.skill && keyStates.player1.skill) {
-            keyStates.player1.skill = false;
-            useSkill('player1');
-        } else if (key === controls.player2.attack) {
+        }
+        else if (key === controls.player2.attack) {
             executeAttack('player2');
-        } else if (key === controls.player2.skill && keyStates.player2.skill) {
-            keyStates.player2.skill = false;
-            useSkill('player2');
         }
     }
 
+    // 初始化控制键
     function initializeControls() {
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
     }
 
+    // 初始化控制键并启动游戏循环
     initializeControls();
     startGameLoop();
 }
 
+// 初始化整个游戏
 function initializeGame() {
     initializeCharacterSelect((selectedCharacters) => {
         initializeBattleScene(selectedCharacters);
     });
 }
 
+// 页面加载完成后初始化游戏
 window.addEventListener('DOMContentLoaded', () => {
     initializeGame();
 });
+
