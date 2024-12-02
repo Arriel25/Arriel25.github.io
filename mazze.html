@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Maze Game with Increased Difficulty</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          flex-direction: column;
+            height: 100vh;
+            background: linear-gradient(120deg, #ff9a9e 0%, #fad0c4 100%), url('card-back.png');
+            background-size: cover;
+            position: relative;
+            overflow: hidden;
+            animation: backgroundAnimation 10s infinite alternate ease-in-out;
+        }
+        #maze {
+            display: grid;
+            gap: 2px;
+            position: relative;
+            z-index: 2;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            background-color: #ddd;
+            position: relative;
+        }
+        .wall {
+            background-color: black;
+        }
+        .start {
+            background-color: green;
+        }
+        .end {
+            background-color: red;
+        }
+        .player {
+            background-color: blue;
+        }
+        .card-module {
+            background-color: yellow;
+            border: 2px dashed #ff0;
+        }
+        #timer {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            z-index: 3;
+        }
+        #shadowOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0,0,0,0) 40%, rgba(128, 0, 128, 0.9) 100%);
+            pointer-events: none;
+            transition: opacity 1s ease-out, clip-path 1s ease-out;
+            opacity: 0;
+            z-index: 1;
+            animation: tentacleExpand 30s linear forwards;
+        }
+
+        @keyframes tentacleExpand {
+            0% {
+                clip-path: circle(5% at 10% 10%);
+            }
+            25% {
+                clip-path: circle(20% at 0% 0%);
+            }
+            50% {
+                clip-path: circle(40% at 100% 0%);
+            }
+            75% {
+                clip-path: circle(60% at 0% 100%);
+            }
+            100% {
+                clip-path: circle(100% at 50% 50%);
+            }
+        }
+        #cardContainer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 5;
+        }
+        .card {
+    width: 100px;
+    height: 150px;
+    background-color: #fff;
+    border: 2px solid #000;
+    display: inline-block;
+    margin: 10px;
+    cursor: pointer;
+    transition: transform 0.5s;
+    background-image: url('card-back.jpg');
+    background-size: cover;
+    backface-visibility: hidden;
+}
+        }
+        .card.flipped {
+    transform: rotateY(180deg);
+}
+        }
+        .rose {
+            background-image: url('rose.jpg');
+            background-size: cover;
+        }
+        .lily {
+            background-image: url('lily.jpg');
+            background-size: cover;
+        }
+        .iris {
+            background-image: url('iris.jpg');
+            background-size: cover;
+        }
+    @keyframes backgroundAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div id="timer">Time Left: <span id="timeLeft">30</span> seconds</div>
+    <div id="maze"></div>
+    <div id="shadowOverlay"></div>
+    <div id="cardContainer">
+        <div class="card" id="card1"></div>
+        <div class="card" id="card2"></div>
+        <div class="card" id="card3"></div>
+    </div>
+    <script>
+        let mazeSize = 5; // Use a small maze size for testing
+        const maxMazeSize = 50; // Increase the maximum maze size limit for better scalability
+        const maze = document.getElementById('maze');
+        const shadowOverlay = document.getElementById('shadowOverlay');
+        const cardContainer = document.getElementById('cardContainer');
+        let playerPosition = { x: 0, y: 0 };
+        let timeLeft = 30; // Initial countdown time in seconds
+        let timerInterval;
+
+        // Function to generate a maze with random walls and ensure a path exists
+        function generateMaze(size) {
+            mazeSize = size;
+            maze.style.gridTemplateColumns = `repeat(${mazeSize}, 30px)`;
+            maze.style.gridTemplateRows = `repeat(${mazeSize}, 30px)`;
+            const newMazeData = Array.from({ length: mazeSize }, () => Array(mazeSize).fill(1));
+
+            // Use a Depth-First Search (DFS) to create a random maze with a guaranteed path
+            function carvePath(x, y) {
+                newMazeData[x][y] = 0;
+                const directions = [
+                    { dx: -1, dy: 0 }, // Up
+                    { dx: 1, dy: 0 },  // Down
+                    { dx: 0, dy: -1 }, // Left
+                    { dx: 0, dy: 1 }   // Right
+                ];
+                directions.sort(() => Math.random() - 0.5); // Shuffle directions
+
+                for (const { dx, dy } of directions) {
+                    const newX = x + dx * 2;
+                    const newY = y + dy * 2;
+                    if (newX >= 0 && newY >= 0 && newX < mazeSize && newY < mazeSize && newMazeData[newX][newY] === 1) {
+                        newMazeData[x + dx][y + dy] = 0; // Carve path between cells
+                        carvePath(newX, newY);
+                    }
+                }
+            }
+
+            // Start carving from the top-left corner
+            carvePath(0, 0);
+
+            // Set start and end points
+            newMazeData[0][0] = 2; // Start point
+            newMazeData[mazeSize - 1][mazeSize - 1] = 3; // End point
+
+            // Ensure there is a clear path to the end point
+            if (newMazeData[mazeSize - 2][mazeSize - 1] === 1 && newMazeData[mazeSize - 1][mazeSize - 2] === 1) {
+                // Make at least one cell next to the end point open
+                newMazeData[mazeSize - 2][mazeSize - 1] = 0;
+            }
+
+            return newMazeData;
+        }
+
+        let mazeData = generateMaze(mazeSize);
+let cardModules = []; // Store card module positions
+
+        // Randomly set card modules
+function setCardModules() {
+    cardModules = [];
+    for (let i = 0; i < mazeSize; i++) {
+        for (let j = 0; j < mazeSize; j++) {
+            if (mazeData[i][j] === 0 && Math.random() < 0.05) {
+                cardModules.push({ x: i, y: j });
+            }
+        }
+    }
+}
+
+// Render the maze
+        function renderMaze() {
+            maze.innerHTML = '';
+            const fragment = document.createDocumentFragment(); // Use a fragment to minimize reflows
+            for (let i = 0; i < mazeSize; i++) {
+                for (let j = 0; j < mazeSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    if (mazeData[i][j] === 1) {
+                        cell.classList.add('wall');
+                    } else if (mazeData[i][j] === 2) {
+                        cell.classList.add('start');
+                    } else if (mazeData[i][j] === 3) {
+                        cell.classList.add('end');
+                    }
+                    if (i === playerPosition.x && j === playerPosition.y) {
+                        cell.classList.add('player');
+                    }
+                    if (cardModules.some(module => module.x === i && module.y === j)) {
+    cell.classList.add('card-module'); // Mark cell visually as card module trigger
+    cell.dataset.cardTrigger = true; // Mark cell to trigger card draw
+}
+                    fragment.appendChild(cell);
+                }
+            }
+            maze.appendChild(fragment); // Append fragment to the maze in one operation
+        }
+
+        // Player movement control
+        document.addEventListener('keydown', (e) => {
+            let newX = playerPosition.x;
+            let newY = playerPosition.y;
+            if (e.key === 'ArrowUp') {
+                newX--;
+            } else if (e.key === 'ArrowDown') {
+                newX++;
+            } else if (e.key === 'ArrowLeft') {
+                newY--;
+            } else if (e.key === 'ArrowRight') {
+                newY++;
+            }
+
+            // Check boundaries and walls
+            if (newX >= 0 && newX < mazeSize && newY >= 0 && newY < mazeSize && mazeData[newX][newY] !== 1) {
+                playerPosition.x = newX;
+                playerPosition.y = newY;
+                setCardModules();
+renderMaze();
+                checkWin();
+                checkCardTrigger(newX, newY);
+            }
+        });
+
+        // Check if player reaches the end point
+        function checkWin() {
+            if (playerPosition.x === mazeSize - 1 && playerPosition.y === mazeSize - 1) {
+                clearInterval(timerInterval); // Stop the timer
+                setTimeout(() => {
+                    alert('Congratulations! You reached the end! Generating a new maze...');
+                    mazeSize = Math.min(mazeSize + 5, maxMazeSize); // Increase the maze size more rapidly, with a limit
+                    playerPosition = { x: 0, y: 0 };
+                    timeLeft = 30; // Reset the countdown timer
+                    mazeData = generateMaze(mazeSize);
+                    renderMaze();
+                    startTimer();
+                }, 10);
+            }
+        }
+
+        // Check if the player triggers a card draw event
+        function checkCardTrigger(x, y) {
+            const cell = maze.children[x * mazeSize + y];
+            if (cell && cell.dataset.cardTrigger) {
+                triggerCardDraw();
+                delete cell.dataset.cardTrigger; // Ensure card trigger happens only once
+            }
+        }
+
+        // Trigger card draw event
+        function triggerCardDraw() {
+            cardContainer.style.display = 'block';
+            const cards = document.querySelectorAll('.card');
+            const flowers = ['rose', 'lily', 'iris'];
+            flowers.sort(() => Math.random() - 0.5); // Shuffle flower cards
+
+            cards.forEach((card, index) => {
+    card.classList.remove('flipped', 'rose', 'lily', 'iris');
+    card.style.backgroundImage = "url('card-back.jpg')";
+    card.classList.add(flowers[index]);
+                card.addEventListener('click', handleCardSelection);
+            });
+        }
+
+        // Handle card selection
+        function handleCardSelection(event) {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.removeEventListener('click', handleCardSelection);
+            });
+
+            const selectedCard = event.currentTarget;
+            selectedCard.classList.add('flipped');
+            if (selectedCard.classList.contains('rose')) {
+                selectedCard.style.backgroundImage = "url('rose.jpg')";
+            } else if (selectedCard.classList.contains('lily')) {
+                selectedCard.style.backgroundImage = "url('lily.jpg')";
+            } else if (selectedCard.classList.contains('iris')) {
+                selectedCard.style.backgroundImage = "url('iris.jpg')";
+            }
+
+            // Determine the effect based on the selected card
+            let effect;
+            if (selectedCard.classList.contains('rose')) {
+                effect = 'goToStart';
+            } else if (selectedCard.classList.contains('lily')) {
+                effect = 'reachEnd';
+            } else if (selectedCard.classList.contains('iris')) {
+                effect = 'resetTime';
+            }
+
+            setTimeout(() => {
+                applyCardEffect(effect);
+                cardContainer.style.display = 'none';
+            }, 1000);
+        }
+
+        // Apply the effect of the card
+        function applyCardEffect(effect) {
+            if (effect === 'reachEnd') {
+                playerPosition = { x: mazeSize - 1, y: mazeSize - 1 };
+            } else if (effect === 'goToStart') {
+                playerPosition = { x: 0, y: 0 };
+            } else if (effect === 'resetTime') {
+                timeLeft = 30;
+            }
+            renderMaze();
+        }
+
+        // Timer function
+        function startTimer() {
+            const timerElement = document.getElementById('timeLeft');
+            timerElement.textContent = timeLeft;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                adjustShadowOverlay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert('Time is up! Game over. Restarting the maze...');
+                    mazeSize = 5; // Reset maze size
+                    playerPosition = { x: 0, y: 0 };
+                    timeLeft = 30; // Reset timer
+                    mazeData = generateMaze(mazeSize);
+                    renderMaze();
+                    startTimer();
+                }
+            }, 1000);
+        }
+
+        // Adjust shadow overlay based on time left
+        function adjustShadowOverlay() {
+            const opacity = 1 - (timeLeft / 30);
+            shadowOverlay.style.opacity = opacity;
+        }
+
+        // Initial rendering and start the timer
+        renderMaze();
+        startTimer();
+    </script>
+<audio id="backgroundMusic" src="background.mp3" autoplay loop></audio>
+<audio id="cheerSound" src="cheer.mp3"></audio>
+<script>
+    // Play cheer sound when player reaches the end point
+    function checkWin() {
+        if (playerPosition.x === mazeSize - 1 && playerPosition.y === mazeSize - 1) {
+            clearInterval(timerInterval); // Stop the timer
+            document.getElementById('cheerSound').play(); // Play cheer sound
+            setTimeout(() => {
+                alert('Congratulations! You reached the end! Generating a new maze...');
+                mazeSize = Math.min(mazeSize + 5, maxMazeSize); // Increase the maze size more rapidly, with a limit
+                playerPosition = { x: 0, y: 0 };
+                timeLeft = 30; // Reset the countdown timer
+                mazeData = generateMaze(mazeSize);
+                setCardModules();
+                renderMaze();
+                startTimer();
+            }, 10);
+        }
+    }
+</script>
+<script>
+    // Wait for user interaction to start the background music
+    document.body.addEventListener('click', function() {
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        backgroundMusic.play();
+    }, { once: true });
+</script>
+</body>
+</html>
