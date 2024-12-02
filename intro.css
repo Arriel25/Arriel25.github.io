@@ -81,26 +81,6 @@ ul {
     backdrop-filter: blur(8px);
 }
 
-.close-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 24px;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 20px;
-    background: rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.close-btn:hover {
-    background: rgba(0, 0, 0, 0.2);
-}
-
 .card-content {
     max-height: 80vh;
     overflow-y: auto;
@@ -145,7 +125,6 @@ ul {
     margin: 16px 0;
 }
 
-/* New styles for element cards */
 .elements-section {
     margin-top: 40px;
     border-top: 2px solid rgba(0, 0, 0, 0.1);
