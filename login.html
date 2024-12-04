@@ -73,62 +73,63 @@
         }
 
         function validateSignUp() {
-            const signupName = document.getElementById('signupName').value;
-            const signupPassword = document.getElementById('signupPassword').value;
+    const signupName = document.getElementById('signupName').value;
+    const signupPassword = document.getElementById('signupPassword').value;
 
 
-            if (!signupName) {
-                alert("Name cannot be empty");
-                return false;
-            }
+    if (!signupName) {
+        alert("Name cannot be empty");
+        return false;
+    }
 
-            if (!pass(signupPassword)) {
-                return false;
-            }
+    if (!pass(signupPassword)) {
+        return false;
+    }
 
-            // Check if the user already exists
-            if (localStorage.getItem(signupName)) {
-                alert("User already exists. Please use a different name.");
-                return false;
-            }
+// 检查用户是否已经存在
+    if (localStorage.getItem(signupName)) {
+        alert("User already exists. Please use a different name.");
+        return false;
+    }
 
-            // Save user data to localStorage
-            localStorage.setItem(signupName, signupPassword);
-            alert("Registration successful!");
-            return true;
-        }
+// 将用户数据保存到localStorage
+    localStorage.setItem(signupName, signupPassword);
+    alert("Registration successful!");
+    return true;
+}
 
-        function validateSignIn() {
-            const signinName = document.getElementById('signinName').value;
-            const signinPassword = document.getElementById('signinPassword').value;
+function validateSignIn() {
+    const signinName = document.getElementById('signinName').value;
+    const signinPassword = document.getElementById('signinPassword').value;
 
-            if (!signinName || !signinPassword) {
-                alert("Name and Password cannot be empty");
-                return false;
-            }
+    if (!signinName || !signinPassword) {
+    alert("Name and Password cannot be empty");
+    return false;
+    }
 
-            // Verify user credentials
-            const storedPassword = localStorage.getItem(signinName);
-            if (storedPassword === signinPassword) {
-                alert("Login successful!");
-                window.location.href = "index.html";
-                return true;
-            } else {
-                alert("Invalid name or password");
-                return false;
-            }
-        }
+// 验证用户
+    const storedPassword = localStorage.getItem(signinName);
+    if (storedPassword === signinPassword) {
+    alert("Login successful!");
+    window.location.href = "index.html";
+    return true;
+    } 
+    else {
+    alert("Invalid name or password");
+    return false;
+    }
+}
 
-        // Add event listeners
-        document.getElementById('signupForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            validateSignUp();
-        });
+// 添加事件监听器
+    document.getElementById('signupForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    validateSignUp();
+    });
 
-        document.getElementById('signinForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            validateSignIn();
-        });
+    document.getElementById('signinForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    validateSignIn();
+    });
 
 const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');
